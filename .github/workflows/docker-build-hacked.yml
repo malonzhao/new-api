@@ -5,6 +5,10 @@ on:
     branches:
       - 'main'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 env:
   REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/new-api
 
@@ -81,8 +85,8 @@ jobs:
           platforms: ${{ matrix.platform }}
           tags: ${{ env.REGISTRY_IMAGE }}
           outputs: type=image,push-by-digest=true,name-canonical=true,push=true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=hacked-${{ matrix.arch }}
+          cache-to: type=gha,scope=hacked-${{ matrix.arch }},mode=max
           provenance: false
           sbom: false
 
